@@ -1,49 +1,102 @@
-# Monitor de Actualización de Cátedra
+# AC-Alerter
 
-Este script monitorea la página web de la cátedra de Arquitectura de Computadoras para detectar cambios en la fecha de última actualización.
+Monitor de actualizaciones para notas de la cátedra de Arquitectura de Computadoras y SIU Guaraní.
 
-## Requisitos
+## Requisitos Previos
 
-- Python 3.x
-- Las dependencias listadas en `requirements.txt`
+1. Python 3.7 o superior
+2. Brave Browser instalado en el sistema
+   - Windows: Descarga e instala desde https://brave.com/download/
+   - Linux (Ubuntu/Debian):
+     ```bash
+     sudo apt install curl
+     sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+     echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"|sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+     sudo apt update
+     sudo apt install brave-browser
+     ```
 
-## Instalación
+## Configuración
 
-1. Clona o descarga este repositorio
-2. Instala las dependencias:
+1. Crea un entorno virtual de Python:
+```bash
+python -m venv venv
+```
+
+2. Activa el entorno virtual:
+- Windows:
+```bash
+.\venv\Scripts\activate
+```
+- Linux/Mac:
+```bash
+source venv/bin/activate
+```
+
+3. Instala las dependencias:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Uso
-
-### Ejecución Normal
-Para ejecutar el monitor con una ventana de consola visible:
+4. Copia el archivo `.env.example` a `.env` y configura tus credenciales:
 ```bash
-python monitor_catedra.py
+cp .env.example .env
 ```
 
-### Ejecución en Segundo Plano
-Para ejecutar el monitor sin ventana de consola visible:
-1. Renombra el archivo a `monitor_catedra.pyw`
-2. Haz doble clic en el archivo
+5. Edita el archivo `.env` y agrega tus credenciales de SIU Guaraní:
+```
+SIU_GUARANI_USER=tu_usuario
+SIU_GUARANI_PASSWORD=tu_contraseña
+```
 
-## Funcionamiento
+## Solución de Problemas
 
-- El script verifica la página cada 5 minutos
-- Cuando detecta un cambio en la fecha de última actualización, muestra una notificación de escritorio
-- Los logs se guardan en `monitor.log`
-- El estado se guarda en `last_update_timestamp.txt`
+Si encuentras errores relacionados con el WebDriver:
 
-## Configuración
+1. Asegúrate de que Brave Browser esté instalado y actualizado
+2. Verifica que el PATH del sistema incluya la ubicación de Brave
+3. Si el error persiste, intenta:
+   - Desinstalar y reinstalar Brave
+   - Limpiar la caché del navegador
+   - Eliminar la carpeta `.wdm` en tu directorio de usuario si existe
 
-Puedes modificar las siguientes constantes en el archivo `monitor_catedra.py`:
-- `URL`: La dirección de la página a monitorear
-- `CHECK_INTERVAL_MINUTES`: Intervalo de verificación en minutos
-- `STATE_FILE`: Nombre del archivo para guardar el estado
+Las ubicaciones típicas de Brave son:
+- Windows: `%LOCALAPPDATA%\BraveSoftware\Brave-Browser\Application\brave.exe`
+- Linux: `/usr/bin/brave` o `/usr/bin/brave-browser`
+- Mac: `/Applications/Brave Browser.app/Contents/MacOS/Brave Browser`
 
-## Notas
+## Uso
 
-- El script requiere conexión a internet para funcionar
-- Las notificaciones funcionan en Windows
-- Para detener el script, presiona Ctrl+C en la ventana de consola (si está visible) 
+Para iniciar el monitor:
+
+```bash
+python monitor.py
+```
+
+El script realizará las siguientes acciones:
+- Monitoreará la página de la cátedra en busca de actualizaciones
+- Iniciará sesión en SIU Guaraní y verificará si hay notas nuevas
+- Mostrará notificaciones de Windows cuando detecte cambios
+- Registrará toda la actividad en el archivo `monitor.log`
+
+El monitor verificará ambos sistemas cada 5 minutos. Puedes modificar este intervalo cambiando la constante `CHECK_INTERVAL_MINUTES` en el archivo `monitor.py`.
+
+## Estructura del Proyecto
+
+```
+.
+├── .env.example          # Plantilla para configuración
+├── .env                  # Configuración (crear a partir de .env.example)
+├── monitor.py           # Script principal unificado
+├── monitor.log          # Archivo de registro
+├── requirements.txt     # Dependencias del proyecto
+└── README.md           # Este archivo
+```
+
+## Logs
+
+El script genera logs detallados en el archivo `monitor.log`. Puedes consultar este archivo para ver el historial de verificaciones y cualquier error que pueda ocurrir.
+
+## Detener el Monitor
+
+Para detener el monitor, presiona `Ctrl+C` en la terminal donde está ejecutándose. 
